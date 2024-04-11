@@ -41,11 +41,42 @@ makefile
     export TELE_TOKEN
     
 ### Usage
-1. Run the application:
+
+1. To build the application for Linux by default, simply run:
+
+   ```bash
+   make build
+   ```
+
+   You can also specify the target operating system and architecture using the following commands:
+
+   - For Windows with AMD64 architecture:
+   
+     ```bash
+     make build_windows
+     ```
+
+   - For macOS with AMD64 architecture:
+   
+     ```bash
+     make build_macOS
+     ```
+
+   - For macOS with ARM architecture:
+   
+     ```bash
+     make build_macOSARM
+     ```
+2. Once the application is built, you can run it using:
     ``` bash
     ./kbot.git start      
 
-2. Type in bot in your Telegram chat 
+3. To push the Docker image to Google Container Registry (GCR), use:
+    ``` bash
+    make push
+
+
+4. Type in bot in your Telegram chat 
     ``` bash
     /start hello
 
