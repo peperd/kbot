@@ -11,6 +11,6 @@ image:
   tag: "v1.0.0-4445444-arm64"
   arch: amd64
 secret:  
-  tokenName: TELE_TOKEN
-  tokenKey: token
+  env: TELE_TOKEN
+  key: token
   name: kbot
