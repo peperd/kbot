@@ -16,10 +16,12 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: Set Google Cloud credentials environment variable
+        run: echo "export GOOGLE_APPLICATION_CREDENTIALS=${{ steps.auth.outputs.credentials_file }}" >> $GITHUB_ENV
       - name: Run test
         run: make test
       - name: Authenticate Docker with GCR
-        run: docker login -u _json_key --password-stdin https://gcr.io < /home/runner/work/kbot/kbot/gha-creds-e4fb419e3eea490b.json
+        run: echo "$GOOGLE_APPLICATION_CREDENTIALS" | docker login -u _json_key --password-stdin https://gcr.io
       - name: Build&Push
         env:
           APP: "kbot"  
