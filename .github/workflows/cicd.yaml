@@ -13,7 +13,7 @@ jobs:
         with:
           fetch-depth: 0  
       - name: Authenticate with Google Cloud SDK
-        uses: 'google-github-actions/auth@v2
+        uses: google-github-actions/auth@v2
         with:
           service-account-key: ${{ secrets.GCP_SA_KEY }}
           project-id: tetris-effect-419120
