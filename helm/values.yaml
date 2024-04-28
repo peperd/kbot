@@ -7,7 +7,7 @@ autoscaling:
   enabled: false
 image:
   repository: peperd
-  tag: "v1.0.3-bf57b09"
+  tag: "v1.0.3-c391aed-linux-amd64"
   arch: amd64
   OS: linux
 secret:
