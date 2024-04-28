@@ -19,7 +19,7 @@ jobs:
       - name: Run test
         run: make test
       - name: Authenticate Docker with GCR
-        run: echo "${{ secrets.GCP_SA_KEY }}" | docker login -u _json_key --password-stdin https://gcr.io
+        run: docker login -u _json_key --password-stdin https://gcr.io < /home/runner/work/kbot/kbot/gha-creds-e4fb419e3eea490b.json
       - name: Build&Push
         env:
           APP: "kbot"  
