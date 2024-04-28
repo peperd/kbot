@@ -8,7 +8,7 @@ autoscaling:
 image:
   registry: "ghcr.io"
   repository: peperd
-  tag: "v1.0.3-80789e8"
+  tag: "v1.0.3-68f3505"
   arch: amd64
   os: linux
 secret:
