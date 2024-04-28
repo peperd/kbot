@@ -48,4 +48,3 @@ jobs:
           git commit -am "update version $VERSION"    
           git remote set-url origin https://$GITHUB_ACTOR:${{ secrets.PAT }}@github.com/peperd/kbot.git
           git push origin main
-
