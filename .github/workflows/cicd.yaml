@@ -21,7 +21,7 @@ jobs:
       - name: Run test
         run: make test
       - name: Authenticate Docker with GCR
-        run: echo "$GOOGLE_APPLICATION_CREDENTIALS" | docker login -u _json_key --password-stdin https://gcr.io
+        run: docker login -u _json_key --password-stdin https://gcr.io < $GOOGLE_APPLICATION_CREDENTIALS
       - name: Build&Push
         env:
           APP: "kbot"  
