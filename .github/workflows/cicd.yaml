@@ -13,7 +13,7 @@ jobs:
         with:
           fetch-depth: 0  
       - name: Authenticate with Google Cloud SDK
-        uses: google-github-actions/auth@main
+        uses: 'google-github-actions/auth@v2
         with:
           service-account-key: ${{ secrets.GCP_SA_KEY }}
           project-id: tetris-effect-419120
@@ -29,4 +29,3 @@ jobs:
           APP: "kbot"  
           REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
         run: make image push
-
