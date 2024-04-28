@@ -5,12 +5,11 @@
 replicaCount: 1
 autoscaling:
   enabled: false
-
 image:
   repository: peperd
-  tag: "v1.0.0-4445444-arm64"
+  tag: "v1.0.3-437d2aa"
   arch: amd64
-secret:  
+secret:
   env: TELE_TOKEN
   key: token
   name: kbot
