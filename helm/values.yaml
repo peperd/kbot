@@ -10,7 +10,7 @@ image:
   repository: peperd
   tag: "v1.0.3-80789e8"
   arch: amd64
-  OS: linux
+  os: linux
 secret:
   env: TELE_TOKEN
   key: token
