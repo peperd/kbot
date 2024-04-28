@@ -7,7 +7,7 @@ autoscaling:
   enabled: false
 image:
   repository: peperd
-  tag: "v1.0.3-437d2aa"
+  tag: "v1.0.3-bf57b09"
   arch: amd64
 secret:
   env: TELE_TOKEN
