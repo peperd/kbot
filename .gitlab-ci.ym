@@ -1,0 +1,29 @@
+stages:
+  - build
+
+variables:
+  OS: ""
+  ARCH: ""
+
+parameters:
+  OS:
+    type: string
+    default: "linux"
+    allowed:
+      - linux
+      - darwin
+      - windows
+  ARCH:
+    type: string
+    default: "amd64"
+    allowed:
+      - amd64
+      - arm64
+      - armv7
+      - x86
+
+build:
+  stage: build
+  script:
+    - echo "Build for platform $OS"
+    - echo "Build for arch: $ARCH"
