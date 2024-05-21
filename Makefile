@@ -37,27 +37,28 @@ test:
 	go test -v  
 
 get:
-	go get
+	go mod tidy
+	go mod download
 
 build: format get
 	GO_VERSION=1.20
 	export GO_VERSION
-	CGO_ENABLED=0 GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) go build -v -o kbot -ldflags "-X 'github.com/peperd/kbot/cmd.appVersion=$(VERSION)'"
+	CGO_ENABLED=0 GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) go build -v -o kbot -ldflags "-X 'gcr.io/tetris-effect-419120/kbot/kbot.git/cmd.appVersion=$(VERSION)'"
 
 build_macOS: format get
 	GO_VERSION=1.20
 	export GO_VERSION
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -v -o kbot -ldflags "-X 'github.com/peperd/kbot/cmd.appVersion=$(VERSION)'"
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -v -o kbot -ldflags "-X 'gcr.io/tetris-effect-419120/kbot/kbot.git/cmd.appVersion=$(VERSION)'"
 
 build_macOSARM: format get
 	GO_VERSION=1.20
 	export GO_VERSION
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -v -o kbot -ldflags "-X 'github.com/peperd/kbot/cmd.appVersion=$(VERSION)'"
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -v -o kbot -ldflags "-X 'gcr.io/tetris-effect-419120/kbot/kbot.git/cmd.appVersion=$(VERSION)'"
 
 build_windows: format get
 	GO_VERSION=1.20
 	export GO_VERSION
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -v -o kbot -ldflags "-X 'github.com/peperd/kbot/cmd.appVersion=$(VERSION)'"
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -v -o kbot -ldflags "-X 'gcr.io/tetris-effect-419120/kbot/kbot.git/cmd.appVersion=$(VERSION)'"
 
 image:
 	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}

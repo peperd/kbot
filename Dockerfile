@@ -1,7 +1,11 @@
-FROM quay.io/projectquay/golang:1.20 as builder
+FROM quay.io/projectquay/golang:1.21 as builder
 
 WORKDIR /go/src/app
 COPY . .
+RUN make build
+
+RUN go mod tidy
+RUN go mod download
 RUN make build
 
 FROM busybox

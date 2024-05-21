@@ -7,10 +7,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
-	"github.com/hirosassa/zerodriver"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
@@ -22,7 +23,8 @@ import (
 
 var (
 	// Teletoken bot
-	TeleToken = os.Getenv("TELE_TOKEN")
+	TeleToken   = os.Getenv("TELE_TOKEN")
+	MetricsHost = os.Getenv("METRICS_HOST")
 )
 
 // Initialize OpenTelemetry
@@ -57,11 +59,11 @@ func initMetrics(ctx context.Context) {
 }
 
 func pmetrics(ctx context.Context, payload string) {
-	// Get the global MeterProvider and create a new Meter with the name "kbot_light_signal_counter"
-	meter := otel.GetMeterProvider().Meter("kbot_light_signal_counter")
+	// Get the global MeterProvider and create a new Meter with the name "kbot_counter"
+	meter := otel.GetMeterProvider().Meter("kbot_logs")
 
-	// Get or create an Int64Counter instrument with the name "kbot_light_signal_<payload>"
-	counter, _ := meter.Int64Counter(fmt.Sprintf("kbot_light_signal_%s", payload))
+	// Get or create an Int64Counter instrument with the name "kbot_logs_<payload>"
+	counter, _ := meter.Int64Counter("kbot_requests_total")
 
 	// Add a value of 1 to the Int64Counter
 	counter.Add(ctx, 1)
@@ -80,21 +82,34 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("kbot started", appVersion)
-		logger := zerodriver.NewProductionLogger()
+		if MetricsHost == "" {
+			log.Fatalf("METRICS_HOST environment variable is not set")
+		}
 		kbot, err := telebot.NewBot(telebot.Settings{
 			URL:    "",
 			Token:  TeleToken,
 			Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
 		})
 		if err != nil {
-			logger.Fatal().Str("Error", err.Error()).Msg("Please check TELE_TOKEN")
+			log.Fatalf("Error creating bot: %v", err)
 			// log.Fatalf("Please check TELE_TOKEN env variable. %s", err)
 			return
 		} else {
-			logger.Info().Str("Version", appVersion).Msg("kbot started")
+			logrus.Info("kbot started")
 		}
 
+		trafficSignal := make(map[string]map[string]int8)
+
+		trafficSignal["red"] = make(map[string]int8)
+		trafficSignal["amber"] = make(map[string]int8)
+		trafficSignal["green"] = make(map[string]int8)
+
+		trafficSignal["red"]["pin"] = 12
+		trafficSignal["amber"]["pin"] = 27
+		trafficSignal["green"]["pin"] = 22
+
 		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
+			logrus.Fatal(http.ListenAndServe(":2112", nil))
 			log.Print(m.Message().Payload, m.Text())
 			payload := m.Message().Payload
 			pmetrics(context.Background(), payload)
@@ -102,7 +117,12 @@ to quickly create a Cobra application.`,
 			switch payload {
 			case "hello":
 				err = m.Send(fmt.Sprintf("Hello I'm Kbot %s!", appVersion))
+				logrus.Info("Received valid /start hello command")
+			default:
+				logrus.Warn("Received invalid command")
+				err = m.Send(fmt.Sprintf("Unknown command", appVersion))
 			}
+
 			return err
 		})
 
