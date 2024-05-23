@@ -6,12 +6,10 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"github.com/hirosassa/zerodriver"
 	"github.com/spf13/cobra"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
@@ -60,10 +58,10 @@ func initMetrics(ctx context.Context) {
 
 func pmetrics(ctx context.Context, payload string) {
 	// Get the global MeterProvider and create a new Meter with the name "kbot_counter"
-	meter := otel.GetMeterProvider().Meter("kbot_logs")
+	meter := otel.GetMeterProvider().Meter("kbot_counter")
 
 	// Get or create an Int64Counter instrument with the name "kbot_logs_<payload>"
-	counter, _ := meter.Int64Counter("kbot_requests_total")
+	counter, _ := meter.Int64Counter(fmt.Sprintf("kbot_light_signal_%s", payload))
 
 	// Add a value of 1 to the Int64Counter
 	counter.Add(ctx, 1)
@@ -82,20 +80,18 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("kbot started", appVersion)
-		if MetricsHost == "" {
-			log.Fatalf("METRICS_HOST environment variable is not set")
-		}
+		logger := zerodriver.NewProductionLogger()
 		kbot, err := telebot.NewBot(telebot.Settings{
 			URL:    "",
 			Token:  TeleToken,
 			Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
 		})
 		if err != nil {
-			log.Fatalf("Error creating bot: %v", err)
+			logger.Fatal().Str("Error", err.Error()).Msg("Please check TELE_TOKEN")
 			// log.Fatalf("Please check TELE_TOKEN env variable. %s", err)
 			return
 		} else {
-			logrus.Info("kbot started")
+			logger.Info().Str("Version", appVersion).Msg("kbot started")
 		}
 
 		trafficSignal := make(map[string]map[string]int8)
@@ -105,25 +101,36 @@ to quickly create a Cobra application.`,
 		trafficSignal["green"] = make(map[string]int8)
 
 		trafficSignal["red"]["pin"] = 12
+		//default on/off
+		//trafficSignal["red"]["on"]=0
 		trafficSignal["amber"]["pin"] = 27
 		trafficSignal["green"]["pin"] = 22
 
 		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
-			logrus.Fatal(http.ListenAndServe(":2112", nil))
-			log.Print(m.Message().Payload, m.Text())
+			logger.Info().Str("Payload", m.Text()).Msg(m.Message().Payload)
+			// log.Print(m.Message().Payload, m.Text())
 			payload := m.Message().Payload
 			pmetrics(context.Background(), payload)
-
 			switch payload {
 			case "hello":
 				err = m.Send(fmt.Sprintf("Hello I'm Kbot %s!", appVersion))
-				logrus.Info("Received valid /start hello command")
+
+			case "red", "amber", "green":
+				if trafficSignal[payload]["on"] == 0 {
+					trafficSignal[payload]["on"] == 1
+				} else {
+					trafficSignal[payload]["on"] == 0
+				}
+
+				err = m.Send(fmt.Sprintf("Switch %s light signal to %d", payload, trafficSignal[payload]["on"]))
+
 			default:
-				logrus.Warn("Received invalid command")
-				err = m.Send(fmt.Sprintf("Unknown command", appVersion))
+				err = m.Send("Usage: /s red|amber|green")
+
 			}
 
 			return err
+
 		})
 
 		kbot.Start()
