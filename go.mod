@@ -30,9 +30,7 @@ require (
 require (
 	github.com/hirosassa/zerodriver v0.1.4
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stianeikeland/go-rpio v4.2.0+incompatible
 	go.opentelemetry.io/otel v1.26.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.26.0
 )

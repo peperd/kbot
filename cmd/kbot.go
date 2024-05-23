@@ -117,9 +117,9 @@ to quickly create a Cobra application.`,
 
 			case "red", "amber", "green":
 				if trafficSignal[payload]["on"] == 0 {
-					trafficSignal[payload]["on"] == 1
+					trafficSignal[payload]["on"] = 1
 				} else {
-					trafficSignal[payload]["on"] == 0
+					trafficSignal[payload]["on"] = 0
 				}
 
 				err = m.Send(fmt.Sprintf("Switch %s light signal to %d", payload, trafficSignal[payload]["on"]))
